@@ -1,15 +1,19 @@
 package de.neuefische.todobackend.controller;
 
 import de.neuefische.todobackend.model.TodoItem;
-import de.neuefische.todobackend.model.dto.AddTodoItemDto;
 import de.neuefische.todobackend.service.TodoItemService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/todo")
@@ -23,36 +27,31 @@ public class TodoItemController {
     }
 
     @GetMapping
-    public List<TodoItem> listItems() {
-        return service.listItems();
+    public List<TodoItem> findAllTodoItems(@RequestParam(name = "status", required = false) String status) {
+        return service.findAll(status);
     }
 
     @GetMapping("{id}")
-    public TodoItem findById(@PathVariable String id) {
-        Optional<TodoItem> response = service.findById(id);
-        if (response.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item with id " + id + " not found");
-        }
-        return response.get();
+    public TodoItem findById(@PathVariable Long id) {
+
+        TodoItem todoItem = service.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Element not found! id: " + id));
+
+        return todoItem;
     }
 
     @PostMapping
-    public TodoItem addTodoItem(@RequestBody AddTodoItemDto itemToAdd) {
-        return service.addItem(itemToAdd);
+    public TodoItem create(@RequestBody TodoItem todoItem) {
+        return service.save(todoItem);
     }
 
-    @PutMapping("{id}")
-    public TodoItem updateTodoItem(@RequestBody TodoItem item) {
-        try {
-            return service.updateTodoItem(item);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    @PutMapping
+    public TodoItem update(@RequestBody TodoItem todoItem) {
+        return service.update(todoItem);
     }
 
     @DeleteMapping("{id}")
-    public void deleteById(@PathVariable String id){
+    public void deleteById(@PathVariable Long id) {
         service.deleteById(id);
     }
-
 }
