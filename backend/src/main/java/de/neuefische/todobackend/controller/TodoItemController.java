@@ -33,11 +33,8 @@ public class TodoItemController {
 
     @GetMapping("{id}")
     public TodoItem findById(@PathVariable Long id) {
-
-        TodoItem todoItem = service.findById(id)
+        return service.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Element not found! id: " + id));
-
-        return todoItem;
     }
 
     @PostMapping
