@@ -10,11 +10,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@With
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "todo_item")
 public class TodoItem {
